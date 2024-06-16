@@ -1,0 +1,256 @@
+* {
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
+  box-sizing: border-box;
+}
+body {
+  background: #222;
+}
+.card {
+  width: 90%;
+  max-width: 900px;
+  background: linear-gradient(#e66465, #9198e5);
+  color: #fff;
+  margin: 100px auto 0;
+  border-radius: 20px;
+  padding: 40px 35px;
+  text-align: center;
+}
+.search {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.search input {
+  border: 0;
+  outline: 0;
+  background: #ebfffc;
+  color: #555;
+  padding: 10px 25px;
+  height: 60px;
+  border-radius: 30px;
+  flex: 1;
+  margin-right: 16px;
+  font-size: 18px;
+}
+.search button {
+  border: 0;
+  outline: 0;
+  background: #ebfffc;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+}
+.search button img {
+  width: 16px;
+}
+.weather-icon {
+  width: 170px;
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+
+.weather h1 {
+  font-size: 80px;
+  font-weight: 500;
+  margin-bottom: 30px;
+}
+.weather h2 {
+  font-size: 45px;
+  font-weight: 400;
+  margin-bottom: 10px;
+}
+
+.details {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  margin-top: 50px;
+}
+.col {
+  display: flex;
+  align-items: center;
+  text-align: left;
+}
+.col img {
+  width: 60px;
+  margin-right: 10px;
+}
+.humidity,
+.wind {
+  font-size: 28px;
+  margin-top: -6px;
+}
+.col2 {
+  display: flex;
+  align-items: center;
+  text-align: left;
+}
+.col2 img {
+  width: 60px;
+  margin-right: 10px;
+}
+.pressure,
+.feels-like {
+  font-size: 28px;
+  margin-top: -8px;
+}
+.weather {
+  display: none;
+}
+.error {
+  text-align: left;
+  margin-left: 10px;
+  font-size: 14px;
+  margin-top: 10px;
+  display: none;
+}
+
+.forecast {
+  margin-top: 50px;
+  text-align: left;
+}
+.forecast h2 {
+  font-size: 24px;
+  font-weight: bold;
+}
+.forecast-items {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+.forecast-item {
+  width: 30%;
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.forecast-item img {
+  width: 50px;
+  margin-bottom: 10px;
+}
+.tabs {
+  margin: 0px 0px 50px 0px;
+}
+.tabs__items {
+  display: flex;
+}
+.tabs__item {
+  flex: 0 1 33.333%;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-transform: uppercase;
+  color: #fff;
+  text-decoration: none;
+}
+.tabs__item span {
+  position: relative;
+}
+
+.tabs__block {
+  position: relative;
+  padding: 20px;
+  font-size: 18px;
+  line-height: 24px;
+  display: none;
+}
+.tabs__block:before {
+  content: "";
+  height: 50px;
+  width: 33.333%;
+  position: absolute;
+  top: -50px;
+}
+
+.tabs__block:nth-child(1):before {
+  left: 0;
+}
+
+.tabs__block:nth-child(2):before {
+  left: 33.333%;
+}
+
+.tabs__block:target {
+  display: block;
+}
+.nested-tabs {
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+  background-color: #55555508;
+  padding-top: 20px;
+}
+
+.nested-tabs__block {
+  display: none;
+}
+
+.nested-tabs__block.active {
+  display: block;
+}
+
+.nested-tabs-buttons {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.nested-tabs-buttons button {
+  border: none;
+  background: transparent;
+  color: #000000;
+  padding: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+
+  background-color: rgb(255, 255, 255);
+  border-radius: 5px;
+}
+
+.nested-tabs-buttons button:hover {
+  opacity: 0.7;
+  background-color: rgb(20, 113, 126);
+  color: #fff;
+}
+.analytics-data {
+  background-color: #f4f4f437;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(255, 255, 255, 0.1);
+  color: rgb(248, 248, 248);
+  flex: 1;
+  margin-right: 20px;
+}
+.analytics-data h2 {
+  font-size: 24px;
+  margin-bottom: 16px;
+}
+.analytics-data p {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+.icon {
+  width: 50px;
+  height: auto;
+}
+.graph {
+  flex: 1;
+  background-color: #f4f4f4;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(255, 255, 255, 0);
+  color: rgb(248, 248, 248);
+  margin-right: 20px;
+  margin-top: 5px;
+}

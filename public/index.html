@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    
+    <div class="card">
+        <div class="search">
+            <input type="text" placeholder="enter city name" spellcheck="false">
+            <button><img src="images/search.png" alt="search"></button>
+        </div>
+        <div class="error">
+            <p>Invalid city name</p>
+        </div>
+        <div class="weather">
+            <div class="tabs">
+            <nav class="tabs__items">
+                <a href="#tab_01" class="tabs__item"><span>Weather</span></a>
+                <a href="#tab_02" class="tabs__item"><span>Map</span></a>
+                <a href="#tab_03" class="tabs__item"><span>Analitics</span></a>
+            </nav>
+            <div class="tabs__body">
+                <div id="tab_01" class="tabs__block">
+            <img src="images/rain.png" class="weather-icon" alt="weather-icon">
+            <h1 class="temp">22°C</h1>
+            <h2 class="city">New York</h2>
+            <h3 class="country">USA</h3>
+            <div class="details">
+                <div class="col">
+                    <img src="images/humidity.png" alt="humidity-icon">
+                    <div>
+                        <p class="humidity">50%</p>
+                        <p>Humidity</p>
+                    </div>
+                </div>
+                <div class="col">
+                    <img src="images/wind.png" alt="wind-icon">
+                    <div>
+                        <p class="wind">15km/h</p>
+                        <p>Wind Speed</p>
+                    </div>
+                </div>
+                <div class="col2">
+                    <img src="images/pressure.png" alt="pressure-icon">
+                    <div>
+                        <p class="pressure">1008hPa</p>
+                        <p>Pressure</p>
+                    </div>
+                </div>
+                <div class="col2">
+                    <img src="images/feels.png" alt="feels-icon">
+                    <div>
+                        <p class="feels-like">22°C</p>
+                        <p>Feels like</p>
+                    </div>
+                </div>
+            </div>
+            <div class="forecast">   
+                <h2 >Forecast</h2>
+                <div class="forecast-items"></div>
+            </div>
+        </div>
+        <div id="tab_02" class="tabs__block">
+            <div id="nested-tabs" class="nested-tabs-buttons">
+                <button onclick="showNestedTab('nested_tab_01')">Wind</button>
+                <button onclick="showNestedTab('nested_tab_02')">Temperature</button>
+                <button onclick="showNestedTab('nested_tab_03')">Rain&Snow</button>
+              </div>
+              <div id="nested_tab_01" class="nested-tabs__block active">
+                <iframe src="map.html" width="100%" height="600px" frameborder="0"></iframe>
+              </div>
+              <div id="nested_tab_02" class="nested-tabs__block">
+                <iframe src="map2.html" width="100%" height="600px" frameborder="0"></iframe>
+              </div>
+              <div id="nested_tab_03" class="nested-tabs__block">
+                <iframe src="map3.html" width="100%" height="600px" frameborder="0"></iframe>
+              </div>
+            </div>
+
+            <div id="tab_03" class="tabs__block">
+                <div class="analytics-data">
+                    <h2>Weather Analytics for 5 days</h2>
+                    <p><img src="images/feels.png" alt="Thermometer" class="icon">Average Max Temperature: <span id="avgMaxTemp"></span></p>
+                    <p><img src="images/feels.png" alt="Thermometer" class="icon"> Average Min Temperature: <span id="avgMinTemp"></span></p>
+                    <p><img src="images/clear.png" alt="Sun" class="icon">Sunny Days: <span id="sunnyDays"></span></p>
+                    <p><img src="images/drizzle.png" alt="Rain" class="icon">Rainy Days: <span id="rainyDays"></span></p>
+                    <p><img src="images/snow.png" alt="Snow" class="icon">Snowy Days: <span id="snowyDays"></span></p>
+                  </div>
+                  <div class="graph">
+                    <canvas id="temperatureChart" width="400" height="200"></canvas>
+                  </div>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
+</div>
+
+
+
+
+    <script>
+
+        
+        
+    
+  
+  function showNestedTab(nestedTabId) {
+      const nestedTabs = document.querySelectorAll('.nested-tabs__block');
+      nestedTabs.forEach(tab => {
+        if (tab.id === nestedTabId) {
+          tab.classList.add('active');
+        } else {
+          tab.classList.remove('active');
+        }
+      });
+    }
+         
+    function openTab(evt, tabName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName('tab');
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = 'none';
+        }
+        tablinks = document.getElementsByClassName('tab-link');
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(' active', '');
+        }
+        document.getElementById(tabName).style.display = 'block';
+        evt.currentTarget.className += ' active';
+    }
+
+        const apiKey = "cc8f484b777a43a787f90319242803";
+        const apiUrl = "https://api.weatherapi.com/v1/forecast.json?key=cc8f484b777a43a787f90319242803&q=";
+
+        const searchBox = document.querySelector(".search input");
+        const searchBtn = document.querySelector(".search button");
+        const weatherIcon = document.querySelector(".weather-icon");
+       
+        async function getForecast(city) {
+         const forecastResponse = await fetch(`${apiUrl}${city}&days=5`); 
+         const forecastData = await forecastResponse.json();
+        return forecastData;
+                    }
+                    
+  
+
+async function checkWeather(city) {
+const response = await fetch(`${apiUrl}${city}`);
+    if (response.status == 404) {
+        document.querySelector(".error").style.display = "block";
+        document.querySelector(".weather").style.display = "none";
+    } else {
+        const data = await response.json();
+        document.querySelector(".city").innerHTML = data.location.name;
+        document.querySelector(".temp").innerHTML = Math.round(data.current.temp_c) + "°C";
+        document.querySelector(".humidity").innerHTML = data.current.humidity + "%";
+        document.querySelector(".wind").innerHTML = data.current.wind_kph + " km/h";
+        document.querySelector(".pressure").innerHTML = data.current.pressure_mb + "hPa";
+        document.querySelector(".feels-like").innerHTML = data.current.feelslike_c + "°C";
+        document.querySelector(".country").innerHTML = data.location.country;
+
+        if (data.current.condition.text.includes("Cloud")) {
+            weatherIcon.src = "images/clouds.png";
+        } else if (data.current.condition.text.includes("Clear")) {
+            weatherIcon.src = "images/clear.png";
+        } else if (data.current.condition.text.includes("Rain")) {
+            weatherIcon.src = "images/rain.png";
+        } else if (data.current.condition.text.includes("Drizzle")) {
+            weatherIcon.src = "images/drizzle.png";
+        } else if (data.current.condition.text.includes("Mist")) {
+            weatherIcon.src = "images/mist.png";
+        } else if (data.current.condition.text.includes("Snow")) {
+            weatherIcon.src = "images/snow.png";
+        }
+
+        document.querySelector(".weather").style.display = "block";
+        document.querySelector(".error").style.display = "none";
+
+        const forecastData = await getForecast(city);
+        const forecastContainer = document.querySelector(".forecast-items");
+        forecastContainer.innerHTML = "";
+
+forecastData.forecast.forecastday.forEach(day => {
+    const forecastItem = document.createElement("div");
+    forecastItem.classList.add("forecast-item");
+
+    const dayOfWeek = new Date(day.date).toLocaleString('en-us', { weekday: 'long' });
+    const dayName = document.createElement("p");
+    dayName.textContent = dayOfWeek;
+
+    const conditionImg = document.createElement("img");
+    if (day.day.condition.text.includes("Sunny")) {
+        conditionImg.src = "day/113.png";
+    } else if (day.day.condition.text.includes("Partly cloudy")) {
+        conditionImg.src = "day/116.png";
+    } else if (day.day.condition.text.includes("Cloudy")) {
+        conditionImg.src = "day/119.png";
+    } else if (day.day.condition.text.includes("Overcast")) {
+        conditionImg.src = "day/122.png";
+    } else if (day.day.condition.text.includes("Mist")) {
+        conditionImg.src = "day/143.png";
+    } else if (day.day.condition.text.includes("Patchy rain possible")) {
+        conditionImg.src = "day/176.png";
+    } else if (day.day.condition.text.includes("Patchy snow possible")) {
+        conditionImg.src = "day/179.png";
+    } else if (day.day.condition.text.includes("Patchy sleet possible")) {
+        conditionImg.src = "day/182.png";
+    } else if (day.day.condition.text.includes("Patchy freezing drizzle possible")) {
+        conditionImg.src = "day/185.png";
+    } else if (day.day.condition.text.includes("Thundery outbreaks possible")) {
+        conditionImg.src = "day/200.png";
+    } else if (day.day.condition.text.includes("Blowing snow")) {
+        conditionImg.src = "day/227.png";
+    } else if (day.day.condition.text.includes("Blizzard")) {
+        conditionImg.src = "day/230.png";
+    } else if (day.day.condition.text.includes("Fog")) {
+    conditionImg.src = "day/248.png";
+} else if (day.day.condition.text.includes("Freezing fog")) {
+    conditionImg.src = "day/260.png";
+} else if (day.day.condition.text.includes("Patchy light drizzle")) {
+    conditionImg.src = "day/263.png";
+} else if (day.day.condition.text.includes("Light drizzle")) {
+    conditionImg.src = "day/266.png";
+} else if (day.day.condition.text.includes("Freezing drizzle")) {
+    conditionImg.src = "day/281.png";
+} else if (day.day.condition.text.includes("Heavy freezing drizzle")) {
+    conditionImg.src = "day/284.png";
+} else if (day.day.condition.text.includes("Patchy light rain")) {
+    conditionImg.src = "day/293.png";
+} else if (day.day.condition.text.includes("Light rain")) {
+    conditionImg.src = "day/296.png";
+} else if (day.day.condition.text.includes("Moderate rain at times")) {
+    conditionImg.src = "day/299.png";
+} else if (day.day.condition.text.includes("Moderate rain")) {
+    conditionImg.src = "day/302.png";
+} else if (day.day.condition.text.includes("Heavy rain at times")) {
+    conditionImg.src = "day/305.png";
+} else if (day.day.condition.text.includes("Heavy rain")) {
+    conditionImg.src = "day/308.png";
+} else if (day.day.condition.text.includes("Light freezing rain")) {
+    conditionImg.src = "day/311.png";
+} else if (day.day.condition.text.includes("Moderate or heavy freezing rain")) {
+    conditionImg.src = "day/314.png";
+} else if (day.day.condition.text.includes("Light sleet")) {
+    conditionImg.src = "day/317.png";
+} else if (day.day.condition.text.includes("Moderate or heavy sleet")) {
+    conditionImg.src = "day/320.png";
+} else if (day.day.condition.text.includes("Patchy light snow")) {
+    conditionImg.src = "day/323.png";
+} else if (day.day.condition.text.includes("Light snow")) {
+    conditionImg.src = "day/326.png";
+} else if (day.day.condition.text.includes("Patchy moderate snow")) {
+    conditionImg.src = "day/329.png";
+} else if (day.day.condition.text.includes("Moderate snow")) {
+    conditionImg.src = "day/332.png";
+} else if (day.day.condition.text.includes("Patchy heavy snow")) {
+    conditionImg.src = "day/335.png";
+} else if (day.day.condition.text.includes("Heavy snow")) {
+    conditionImg.src = "day/338.png";
+} else if (day.day.condition.text.includes("Ice pellets")) {
+    conditionImg.src = "day/350.png";
+} else if (day.day.condition.text.includes("Light rain shower")) {
+    conditionImg.src = "day/353.png";
+} else if (day.day.condition.text.includes("Moderate or heavy rain shower")) {
+    conditionImg.src = "day/356.png";
+} else if (day.day.condition.text.includes("Torrential rain shower")) {
+    conditionImg.src = "day/359.png";
+} else if (day.day.condition.text.includes("Light sleet showers")) {
+    conditionImg.src = "day/362.png";
+} else if (day.day.condition.text.includes("Moderate or heavy sleet showers")) {
+    conditionImg.src = "day/365.png";
+} else if (day.day.condition.text.includes("Light snow showers")) {
+    conditionImg.src = "day/368.png";
+} else if (day.day.condition.text.includes("Moderate or heavy snow showers")) {
+    conditionImg.src = "day/371.png";
+} else if (day.day.condition.text.includes("Light showers of ice pellets")) {
+    conditionImg.src = "day/374.png";
+} else if (day.day.condition.text.includes("Moderate or heavy showers of ice pellets")){
+    conditionImg.src ="day/377.png";
+
+} else if (day.day.condition.text.includes("Patchy light rain with thunder")){
+    conditionImg.src ="day/386.png";
+
+} else if (day.day.condition.text.includes("Moderate or heavy rain with thunder")){
+    conditionImg.src ="day/389.png";
+} else if (day.day.condition.text.includes("Patchy light snow with thunder")){
+    conditionImg.src ="day/392.png";
+} else if (day.day.condition.text.includes("Moderate or heavy snow with thunder")){
+    conditionImg.src ="day/395.png";
+}
+    conditionImg.alt = day.day.condition.text;
+
+    const maxTemp = document.createElement("p");
+    maxTemp.textContent = `Max Temp: ${day.day.maxtemp_c}°C`;
+
+    const minTemp = document.createElement("p");
+    minTemp.textContent = `Min Temp: ${day.day.mintemp_c}°C`;
+
+    forecastItem.appendChild(dayName);
+    forecastItem.appendChild(conditionImg);
+    forecastItem.appendChild(maxTemp);
+    forecastItem.appendChild(minTemp);
+
+    forecastContainer.appendChild(forecastItem);
+    updateWeatherAnalytics();
+    updateChart();
+});
+        
+}  }
+async function updateWeatherAnalytics() {
+  try {
+    const analyticsResponse = await fetch('/weather-analytics');
+    const analyticsData = await analyticsResponse.json();
+
+
+    document.getElementById('avgMaxTemp').innerText = `${analyticsData.avgMaxTemp.toFixed(1)}°C`;;
+    document.getElementById('avgMinTemp').innerText = `${analyticsData.avgMinTemp.toFixed(1)}°C`;
+    document.getElementById('sunnyDays').innerText = analyticsData.sunnyDays;
+    document.getElementById('rainyDays').innerText = analyticsData.rainyDays;
+    document.getElementById('snowyDays').innerText = analyticsData.snowyDays;
+  } catch (error) {
+    console.error('Error updating weather analytics:', error);
+  }
+}
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const ctx = document.getElementById('temperatureChart').getContext('2d');
+  window.temperatureChart = new Chart(ctx, {
+    type: 'line',
+  
+    data: {
+      labels: [],
+      datasets: [
+        {
+          label: 'Max Temperature',
+          data: [],
+          borderColor: 'rgba(255, 99, 132, 1)',
+          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          borderWidth: 1
+        }
+        ,
+        {
+          label: 'Min Temperature',
+          data: [],
+          borderColor: 'rgba(0, 186, 255, 1)',
+          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          borderWidth: 1
+        }
+      ]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: false,
+          ticks: {
+            fontColor: 'black' 
+          }
+        },
+        x: {
+          ticks: {
+            fontColor: 'black' 
+          }
+        }
+      },
+      elements: {
+        line: {
+          borderWidth: 3 
+        },
+        point: {
+          radius: 5 
+        }
+      }
+      
+    }
+  });
+});
+function updateChart() {
+  fetch('/chart-data')
+    .then(response => response.json())
+    .then(data => {
+        const maxTemperatures = data.maxTemperatures;
+      const minTemperatures = data.minTemperatures;
+      const dates = data.dates.map(date => new Date(date).toLocaleDateString('en-US'));
+     
+    
+      window.temperatureChart.data.labels = dates;
+      window.temperatureChart.data.datasets[0].data = maxTemperatures;
+      window.temperatureChart.data.datasets[1].data = minTemperatures;
+     
+      
+      window.temperatureChart.update();
+    })
+    .catch(error => console.error('Error fetching chart data:', error));
+}
+
+searchBtn.addEventListener("click", async () => {
+            const city = searchBox.value;
+            checkWeather(city);
+          
+
+
+            const forecastResponse = await fetch(`/weather?city=${city}`);
+            const forecastData = await forecastResponse.json();
+
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    city: forecastData.location.name,
+                    max_temp: forecastData.current.maxtemp_c,
+                    min_temp: forecastData.current.mintemp_c,
+                    date: new Date().toISOString().split('T')[0],
+                    condition_text:forecastData.current.condition.text
+                })
+            };
+
+            const saveResponse = await fetch('/save-forecast', requestOptions);
+            const saveData = await saveResponse.json();
+           
+            
+            console.log(saveData); 
+         
+       
+                 });
+     
+     
+ 
+        
+ 
+        
+    </script>
+</body>
+</html>
